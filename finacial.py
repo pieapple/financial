@@ -16,32 +16,23 @@ def retrieve_data(url):
         return None
 
 
-def add_sheet(wb, sheet_name, root):
-    ws = wb.add_sheet(sheet_name)
-    row = 0
-    for item in root:
-        if item.tag != "data":
-            break
-
-        if row == 0:
-            col = 0
-            for field in item:
-                ws.write(row, col, field.tag.strip())
-                col += 1
-            row += 1
-
-        col = 0
-        for field in item:
-            ws.write(row, col, field.text.strip())
-            col += 1
-        row += 1
-
+def add_row(ws, index, date, root):
+    ws.write(index, 0, date)
+    ws.write(index, 1, root[-2][2].text)
+    ws.write(index, 2, root[1][4].text)
+    ws.write(index, 3, root[2][4].text)
 
 wb = xlwt.Workbook()
+ws = wb.add_sheet("summary")
+ws.write(0, 0, "date")
+ws.write(0, 1, "volume amount")
+ws.write(0, 2, "largest buyer")
+ws.write(0, 3, "largest seller")
 
-start_date = date(2018, 9, 20)
+row = 0
+start_date = date(2015, 7, 1)
+#end_date = date(2015, 8, 1)
 end_date = date.today()
-
 for n in range(int ((end_date - start_date).days)):
     single_date = start_date + timedelta(n)
 
@@ -50,8 +41,9 @@ for n in range(int ((end_date - start_date).days)):
     if root is None:
         continue
 
-    sheet_name = single_date.strftime("%Y-%m-%d")
-    print "adding sheet", sheet_name
-    add_sheet(wb, sheet_name, root)
+    date = single_date.strftime("%Y-%m-%d")
+    row += 1
+    print "adding row", row, date
+    add_row(ws, row, date, root)
 
 wb.save("financial_data.xls")
