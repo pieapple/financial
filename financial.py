@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
-import urllib
 from datetime import date, timedelta
+from tqdm import tqdm
+import urllib
 import xml.etree.cElementTree as ET
 import xlwt
 
@@ -40,9 +41,9 @@ add_header(ws)
 
 row = 0
 start_date = date(2015, 7, 1)
-# end_date = date(2015, 8, 1)
 end_date = date.today()
-for n in range(int ((end_date - start_date).days)):
+
+for n in tqdm(range(int ((end_date - start_date).days))):
     single_date = start_date + timedelta(n)
 
     url = single_date.strftime("http://cffex.com.cn/sj/ccpm/%Y%m/%d/T.xml")
@@ -52,7 +53,6 @@ for n in range(int ((end_date - start_date).days)):
 
     date = single_date.strftime("%Y-%m-%d")
     row += 1
-    print "adding row", row, date
     add_row(ws, row, date, root)
 
 wb.save("result.xls")
